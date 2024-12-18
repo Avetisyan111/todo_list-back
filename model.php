@@ -12,14 +12,35 @@ class Model
     {
         try 
         {
-            $this->con = new mysqli($this->host,$this->username, $this->password, $this->dbname);
+            $this->con = new mysqli($this->host, $this->username, $this->password, $this->dbname);
             $this->con->set_charset("UTF8");
         }
         catch (Exception $e) 
         {
             echo "Connection Error". $e->getMessage();
+        }   
+    
+    }
+
+    public function create_user($name, $lastname, $login, $pass): bool 
+    {
+        $sql = "INSERT INTO user_info(name, lastname, login, pass) VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->con->prepare($sql);
+
+        if ($stmt === false) 
+            return false;
+
+        $stmt->bind_param('ssss', $name, $lastname, $login, $pass);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true;    
         }
-        
+        else {
+            $stmt->close();
+            return false;
+        }
     }
 
     public function createTask($title, $description): bool 
@@ -34,13 +55,14 @@ class Model
 
         $stmt->bind_param('ss', $title, $description);
 
-        if ($stmt->execute()) 
+        if ($stmt->execute()) { 
+            $stmt->close();
             return true;
-        else
+        }
+        else {
+            $stmt->close();
             return false;
-
-        $stmt->close();
-
+        }
     }
 
     public function getTasks(): array
@@ -57,8 +79,8 @@ class Model
                 $data[] = $rows;
             }  
         }
-        return $data;
-            
+        return $data;      
+    
     }
 
     public function editTask($id): array
@@ -94,6 +116,7 @@ class Model
         $stmt->bind_param('ssi', $title, $description, $id);
 
         if ($stmt->execute())
+            $stmt->close();
             return true;
         
         $stmt->close();
@@ -111,6 +134,5 @@ class Model
     }
     
 }
-
 
 ?>
