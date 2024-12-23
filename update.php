@@ -1,21 +1,25 @@
 <?php 
 
-include "model.php";
+session_start();
 
-if (isset($_POST['id']) && isset($_POST['title']) && isset($_POST['description'])) {
-   
+require "model.php";
+
+if (isset($_POST['id']) && isset($_POST['title']) && isset($_POST['description']) && isset($_SESSION['user_id'])) {
     $id = $_POST['id'];
     $title = $_POST['title'];
     $description = $_POST['description'];
+    $userId = $_SESSION['user_id'];
 
     $model = new Model();
 
-    if ($model->updateTask($id, $title, $description))
-        $data = array('result' => 'success');
-    //else 
-      //  $data = array('result' => 'Error!');
+    if ($model->updateTask($id, $title, $description, $userId)) {
+        $data = ['result' => 'success'];
+    } else {
+        $data = ['result' => 'error'];
+    }
 
     echo json_encode($data);
 }
 
 ?>
+

@@ -1,23 +1,20 @@
 <?php 
 
-include "model.php";
+require "model.php";
 
-    if ($_SERVER['REQUEST_METHOD'] === "POST") {
+if (isset($_POST['name']) && isset($_POST['lastname']) && isset($_POST['login']) && isset($_POST['pass']))  {
+    $name = trim($_POST['name']);
+    $lastname = trim($_POST['lastname']);
+    $login = trim($_POST['login']);
+    $pass = trim($_POST['pass']);
+    
+    $model = new Model();
 
-        $model = new Model();
+    if (!$model->create_user($name, $lastname, $login, $pass)) $data = ['result' => 'error'];
 
-        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $lastname = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
-        $login = isset($_POST['login']) ? trim($_POST['login']) : '';
-        $pass = isset($_POST['pass']) ? trim($_POST['pass']) : '';   
+    $data = ['result' => 'success'];
 
-        if ($model->create_user($name, $lastname, $login, $pass)) {
-            $data = ['result' => 'success'];
-        }
-        else {
-            $data = ['result' => 'error'];
-        }
-        echo json_encode($data);
+    echo json_encode($data);
 
 }
 
